@@ -149,16 +149,6 @@ y_hat = None # Continuous prediction here
 
 
 ```python
-#__SOLUTION__
-
-lr = LinearRegression()
-lr.fit(df[['area_mean']], df[['Target']])
-
-y_hat = lr.predict(df[['area_mean']])
-```
-
-
-```python
 # Plot the resulting regression line.
 fig, ax = plt.subplots(figsize=(7,7))
 sns.scatterplot(df.area_mean, df.Target, hue=df.Target)
@@ -173,7 +163,7 @@ sns.scatterplot(df.area_mean, list(y_hat),color='black')
 
 
 
-![png](index_files/index_23_1.png)
+![png](index_files/index_22_1.png)
 
 
 
@@ -188,21 +178,6 @@ sns.scatterplot(df.area_mean, list(y_hat),color='black')
 ```python
 import numpy as np
 ```
-
-
-```python
-#__SOLUTION__
-lr.predict(np.array([[5],[350], [2000]]))
-```
-
-
-
-
-    array([[-0.26100989],
-           [ 0.07533936],
-           [ 1.68396621]])
-
-
 
 Those predictions are not within the bounds of our target's sample space. In fact, linear regression could produce predictions from **-$\infty$ to $\infty$**  
 
@@ -229,7 +204,7 @@ ax.get_legend().remove();
 ```
 
 
-![png](index_files/index_29_0.png)
+![png](index_files/index_27_0.png)
 
 
 Let's look at how many predictions linear regression got wrong.
@@ -273,7 +248,7 @@ plt.show()
 ```
 
 
-![png](index_files/index_33_0.png)
+![png](index_files/index_31_0.png)
 
 
 # Now Let's Try Logistic Regression
@@ -507,7 +482,7 @@ plt.style.use(['default']);
 ```
 
 
-![png](index_files/index_36_0.png)
+![png](index_files/index_34_0.png)
 
 
 __Your Turn__
@@ -522,19 +497,6 @@ Use the trained logistic regression and make predictions for
 ```python
 # Your code here
 ```
-
-
-```python
-#__SOLUTION__
-log_reg.predict([[5], [350],[2000]])
-```
-
-
-
-
-    array([0, 0, 1])
-
-
 
 Logistic regression's predict function automatically converts the predicted probabilities to categorical predctions.
 To return the probabilities, use the predict_proba method.
@@ -621,7 +583,7 @@ plt.tight_layout();
 ```
 
 
-![png](index_files/index_47_0.png)
+![png](index_files/index_44_0.png)
 
 
 
@@ -721,20 +683,6 @@ one_random_student(student_first_names)
     Jonathan
 
 
-
-```python
-#__SOLUTION__
-'''type II errors, false negatives, are particularly dangerous.  
-A false negative means a sample was predicted to be benign, when in fact it was malignant'''
-```
-
-
-
-
-    'type II errors, false negatives, are particularly dangerous.  \nA false negative means a sample was predicted to be benign, when in fact it was malignant'
-
-
-
 To err on the side of caution, we can force our model to predict more conservitavely.  
 
 By lowering the threshold from .5, our model will predict more positive values, thereby decreasing our false negatives.  Consequently, our false positive rate will go up.
@@ -743,13 +691,6 @@ By lowering the threshold from .5, our model will predict more positive values, 
 ```python
 # Code here
 yhat_lower_thresh = None
-```
-
-
-```python
-#__SOLUTION__
-yhat_lower_thresh = (log_reg.predict_proba(df[['area_mean']])[:,1] > .4).astype(int)
-
 ```
 
 
@@ -784,7 +725,7 @@ plt.tight_layout();
 ```
 
 
-![png](index_files/index_58_0.png)
+![png](index_files/index_53_0.png)
 
 
 
@@ -812,20 +753,6 @@ Using the sigmoid function above, if X = 1, the estimated probability would be 0
 
 ```python
 # Let's code out the sigmoid:
-
-```
-
-
-```python
-#__SOLUTION__
-def sigmoid(x):
-    """
-    params: input from linear equation
-    returns: probability between 0 and 1
-    """
-    
-    return 1/(1+np.e**(-x))
-
 
 ```
 
@@ -973,19 +900,6 @@ three_random_students(student_first_names)
 ```python
 # Code here
 ```
-
-
-```python
-#__SOLUTION__
-log_reg.coef_[0] * df.area_mean.iloc[3] + log_reg.intercept_
-```
-
-
-
-
-    array([-3.43032516])
-
-
 
 ## 4. Interpreting Logistic Regression Coefficients
 
@@ -1403,7 +1317,7 @@ plt.tight_layout();
 ```
 
 
-![png](index_files/index_115_0.png)
+![png](index_files/index_108_0.png)
 
 
 
@@ -1528,7 +1442,7 @@ plt.tight_layout();
 ```
 
 
-![png](index_files/index_123_0.png)
+![png](index_files/index_116_0.png)
 
 
 
@@ -1568,7 +1482,7 @@ ax.set_title('Relative Importance of Features');
 
 
 
-![png](index_files/index_125_1.png)
+![png](index_files/index_118_1.png)
 
 
 
