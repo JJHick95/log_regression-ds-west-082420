@@ -9,8 +9,7 @@
 4. Learn how to interpret a trained logistic model's coefficients
 5. Familiarize ourselves with Maximum Likelihood Estimation
 6. Explore the C (inverse regularization) paramater and hyperparameter tune
-7. Learn how to adjust the threshold of a logistic model
-8. Describe the assumptions of linear regression
+7. Describe the assumptions of logistic regression
 
 
 ```python
@@ -18,16 +17,16 @@ from src.student_caller import three_random_students, one_random_student
 from src.student_list import student_first_names
 ```
 
-# Why logistic 1st of our classifiers?
+# Why logistic regression as the 1st of our classifiers?
 
-Approximately 70% of problems in Data Science are classification problems. There are lots of classification algorithms that are available, but the logistics regression is common and is a useful regression method for solving the binary classification problem.
-
+There are lots of classification algorithms that are available, but the logistics regression is common and is a useful regression method for solving the binary classification problem.
 
 Logistic regression takes a concept we are familiar with, a linear equation, and translates it into a form fit for predicting a class.  
 
 It generally can't compete with the best supervised learning algorithms, but it is **simple, fast, and interpretable**.  
 
 As we will see in mod 4, it will also serve as a segue into our lessons on **neural nets**.
+
 
 # 1. Compare predicting a continuous outcome to predicting a class
 
@@ -36,7 +35,7 @@ Thus far, we have worked to predict continuous target variables using linear reg
   - Continous target variables:
         - Sales price of a home
         - MPG of a car
-        - A Country's Life Expectancy Rate
+        - A country's life expectancy rate
         
 We will now transition into another category of prediction: classification. Instead of continous target variables, we will be predicting whether records from are data are labeled as a particular class.  Whereas the output for the linear regression model can be any number, the output of our classification algorithms can only be a value designated by a set of discrete outcomes.
 
@@ -57,7 +56,7 @@ Let's navigate to the [UCI Machine Learning repository](https://archive.ics.uci.
 three_random_students(student_first_names)
 ```
 
-    ['Karim' 'Sam' 'Matthew']
+    ['Reuben' 'Ali' 'Josh']
 
 
 ### We are still dealing with **labeled data**.
@@ -80,14 +79,13 @@ We are already familiar with how linear regression finds a best-fit "line".  It 
 
 A natural thought would be to use that "line" to descriminate between classes: Everything with an output greater than a certain point is classified as a 1, everything below is classified as a 0.
 
-In this way, logistic classifer is **parametric, discriminitive** function.  The best fit parameters ($\beta$)s creates a decision boundary which allows us to discriminate between the classes.
+Logistic regression does just this, but in a fancy way. The logistic classifer is **parametric, discriminitive** function.  The best fit parameters ($\beta$)s creates a decision boundary which allows us to discriminate between the classes.
 
 ![decision_boundary](https://www.researchgate.net/publication/325813999/figure/fig5/AS:638669773893635@1529282148432/Classification-decision-boundary-using-logistic-regression-The-blue-area-corresponds-to.png)
 
 
 ```python
 #img source https://www.researchgate.net/publication/325813999/figure/fig5/AS:638669773893635@1529282148432/Classification-decision-boundary-using-logistic-regression-The-blue-area-corresponds-to.png
-
 ```
 
 # Breast Cancer Dataset
@@ -98,6 +96,8 @@ or die, have heart disease or not, or a condition is present or absent."   [Elem
 
 [data_source](https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+(Diagnostic))
 
+![breast_cancer_cells](https://storage.googleapis.com/kaggle-datasets-images/180/384/3da2510581f9d3b902307ff8d06fe327/dataset-card.jpg)
+
 
 ```python
 # Breast Cancer identification dataset
@@ -106,8 +106,210 @@ import pandas as pd
 df = pd.read_csv('data/breast_cancer.csv', index_col= 0)
 
 df.drop(columns= ['Unnamed: 32'], inplace = True)
-
+df.head()
 ```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>diagnosis</th>
+      <th>radius_mean</th>
+      <th>texture_mean</th>
+      <th>perimeter_mean</th>
+      <th>area_mean</th>
+      <th>smoothness_mean</th>
+      <th>compactness_mean</th>
+      <th>concavity_mean</th>
+      <th>concave points_mean</th>
+      <th>symmetry_mean</th>
+      <th>...</th>
+      <th>radius_worst</th>
+      <th>texture_worst</th>
+      <th>perimeter_worst</th>
+      <th>area_worst</th>
+      <th>smoothness_worst</th>
+      <th>compactness_worst</th>
+      <th>concavity_worst</th>
+      <th>concave points_worst</th>
+      <th>symmetry_worst</th>
+      <th>fractal_dimension_worst</th>
+    </tr>
+    <tr>
+      <th>id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>842302</th>
+      <td>M</td>
+      <td>17.99</td>
+      <td>10.38</td>
+      <td>122.80</td>
+      <td>1001.0</td>
+      <td>0.11840</td>
+      <td>0.27760</td>
+      <td>0.3001</td>
+      <td>0.14710</td>
+      <td>0.2419</td>
+      <td>...</td>
+      <td>25.38</td>
+      <td>17.33</td>
+      <td>184.60</td>
+      <td>2019.0</td>
+      <td>0.1622</td>
+      <td>0.6656</td>
+      <td>0.7119</td>
+      <td>0.2654</td>
+      <td>0.4601</td>
+      <td>0.11890</td>
+    </tr>
+    <tr>
+      <th>842517</th>
+      <td>M</td>
+      <td>20.57</td>
+      <td>17.77</td>
+      <td>132.90</td>
+      <td>1326.0</td>
+      <td>0.08474</td>
+      <td>0.07864</td>
+      <td>0.0869</td>
+      <td>0.07017</td>
+      <td>0.1812</td>
+      <td>...</td>
+      <td>24.99</td>
+      <td>23.41</td>
+      <td>158.80</td>
+      <td>1956.0</td>
+      <td>0.1238</td>
+      <td>0.1866</td>
+      <td>0.2416</td>
+      <td>0.1860</td>
+      <td>0.2750</td>
+      <td>0.08902</td>
+    </tr>
+    <tr>
+      <th>84300903</th>
+      <td>M</td>
+      <td>19.69</td>
+      <td>21.25</td>
+      <td>130.00</td>
+      <td>1203.0</td>
+      <td>0.10960</td>
+      <td>0.15990</td>
+      <td>0.1974</td>
+      <td>0.12790</td>
+      <td>0.2069</td>
+      <td>...</td>
+      <td>23.57</td>
+      <td>25.53</td>
+      <td>152.50</td>
+      <td>1709.0</td>
+      <td>0.1444</td>
+      <td>0.4245</td>
+      <td>0.4504</td>
+      <td>0.2430</td>
+      <td>0.3613</td>
+      <td>0.08758</td>
+    </tr>
+    <tr>
+      <th>84348301</th>
+      <td>M</td>
+      <td>11.42</td>
+      <td>20.38</td>
+      <td>77.58</td>
+      <td>386.1</td>
+      <td>0.14250</td>
+      <td>0.28390</td>
+      <td>0.2414</td>
+      <td>0.10520</td>
+      <td>0.2597</td>
+      <td>...</td>
+      <td>14.91</td>
+      <td>26.50</td>
+      <td>98.87</td>
+      <td>567.7</td>
+      <td>0.2098</td>
+      <td>0.8663</td>
+      <td>0.6869</td>
+      <td>0.2575</td>
+      <td>0.6638</td>
+      <td>0.17300</td>
+    </tr>
+    <tr>
+      <th>84358402</th>
+      <td>M</td>
+      <td>20.29</td>
+      <td>14.34</td>
+      <td>135.10</td>
+      <td>1297.0</td>
+      <td>0.10030</td>
+      <td>0.13280</td>
+      <td>0.1980</td>
+      <td>0.10430</td>
+      <td>0.1809</td>
+      <td>...</td>
+      <td>22.54</td>
+      <td>16.67</td>
+      <td>152.20</td>
+      <td>1575.0</td>
+      <td>0.1374</td>
+      <td>0.2050</td>
+      <td>0.4000</td>
+      <td>0.1625</td>
+      <td>0.2364</td>
+      <td>0.07678</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 31 columns</p>
+</div>
+
+
+
+We have 30 predictor columns, and 1 target column.  Our target column, however, is not in a form suitable for classification.  
+
+Assumption: **Binary logistic** regression requires the dependent variable to be binary.
+
+We will define malignant as our positive "1" class, and Benign as our "0" class.
 
 
 ```python
@@ -168,17 +370,17 @@ sns.scatterplot(df.area_mean, list(y_hat),color='black')
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x1a24dccf98>
+    <matplotlib.axes._subplots.AxesSubplot at 0x1a1d42d5c0>
 
 
 
 
-![png](index_files/index_23_1.png)
+![png](index_files/index_25_1.png)
 
 
 
 
-- According to the linear regression model, that would be your prediction if area_mean = 350?
+- According to the linear regression model, what would be your prediction if area_mean = 350?
 
 - What about if 'area_mean' is 5?
 
@@ -229,7 +431,7 @@ ax.get_legend().remove();
 ```
 
 
-![png](index_files/index_29_0.png)
+![png](index_files/index_31_0.png)
 
 
 Let's look at how many predictions linear regression got wrong.
@@ -241,6 +443,8 @@ print(f"Linear Regression missed {(df.Target != df.lr_yhat).sum()} predictions")
 
     Linear Regression missed 82 predictions
 
+
+The confusion matrix will be an important visualization in classification. It will allow us to see the distribution of prediction results. 
 
 
 ```python
@@ -273,7 +477,17 @@ plt.show()
 ```
 
 
-![png](index_files/index_33_0.png)
+![png](index_files/index_36_0.png)
+
+
+Volunteer from below to interpret the above CM as type I/II error
+
+
+```python
+three_random_students(student_first_names)
+```
+
+    ['Matthew' 'Ali' 'Josh']
 
 
 # Now Let's Try Logistic Regression
@@ -283,215 +497,26 @@ plt.show()
 # Note: Same module as Linear Regression
 from sklearn.linear_model import LogisticRegression
 
+# Same process: Instantiate instance of the algorithm
 log_reg = LogisticRegression(penalty='none', solver='lbfgs')
+
+# Fit to data
 log_reg.fit(df[['area_mean']], df[['Target']])
+
+# Predict 
 yhat_log = log_reg.predict(df[['area_mean']])
+
+# predict_proba: This is new!
 yhat_log_proba = log_reg.predict_proba(df[['area_mean']])
 
 df['yhat_log_proba'] = yhat_log_proba[:,1]
 df['yhat_log'] = yhat_log
-df.head()
+
 
 ```
 
     /Users/johnmaxbarry/anaconda3/lib/python3.7/site-packages/sklearn/utils/validation.py:760: DataConversionWarning: A column-vector y was passed when a 1d array was expected. Please change the shape of y to (n_samples, ), for example using ravel().
       y = column_or_1d(y, warn=True)
-
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>diagnosis</th>
-      <th>radius_mean</th>
-      <th>texture_mean</th>
-      <th>perimeter_mean</th>
-      <th>area_mean</th>
-      <th>smoothness_mean</th>
-      <th>compactness_mean</th>
-      <th>concavity_mean</th>
-      <th>concave points_mean</th>
-      <th>symmetry_mean</th>
-      <th>...</th>
-      <th>smoothness_worst</th>
-      <th>compactness_worst</th>
-      <th>concavity_worst</th>
-      <th>concave points_worst</th>
-      <th>symmetry_worst</th>
-      <th>fractal_dimension_worst</th>
-      <th>Target</th>
-      <th>lr_yhat</th>
-      <th>yhat_log_proba</th>
-      <th>yhat_log</th>
-    </tr>
-    <tr>
-      <th>id</th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>842302</th>
-      <td>M</td>
-      <td>17.99</td>
-      <td>10.38</td>
-      <td>122.80</td>
-      <td>1001.0</td>
-      <td>0.11840</td>
-      <td>0.27760</td>
-      <td>0.3001</td>
-      <td>0.14710</td>
-      <td>0.2419</td>
-      <td>...</td>
-      <td>0.1622</td>
-      <td>0.6656</td>
-      <td>0.7119</td>
-      <td>0.2654</td>
-      <td>0.4601</td>
-      <td>0.11890</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0.978233</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>842517</th>
-      <td>M</td>
-      <td>20.57</td>
-      <td>17.77</td>
-      <td>132.90</td>
-      <td>1326.0</td>
-      <td>0.08474</td>
-      <td>0.07864</td>
-      <td>0.0869</td>
-      <td>0.07017</td>
-      <td>0.1812</td>
-      <td>...</td>
-      <td>0.1238</td>
-      <td>0.1866</td>
-      <td>0.2416</td>
-      <td>0.1860</td>
-      <td>0.2750</td>
-      <td>0.08902</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0.999514</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>84300903</th>
-      <td>M</td>
-      <td>19.69</td>
-      <td>21.25</td>
-      <td>130.00</td>
-      <td>1203.0</td>
-      <td>0.10960</td>
-      <td>0.15990</td>
-      <td>0.1974</td>
-      <td>0.12790</td>
-      <td>0.2069</td>
-      <td>...</td>
-      <td>0.1444</td>
-      <td>0.4245</td>
-      <td>0.4504</td>
-      <td>0.2430</td>
-      <td>0.3613</td>
-      <td>0.08758</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0.997939</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>84348301</th>
-      <td>M</td>
-      <td>11.42</td>
-      <td>20.38</td>
-      <td>77.58</td>
-      <td>386.1</td>
-      <td>0.14250</td>
-      <td>0.28390</td>
-      <td>0.2414</td>
-      <td>0.10520</td>
-      <td>0.2597</td>
-      <td>...</td>
-      <td>0.2098</td>
-      <td>0.8663</td>
-      <td>0.6869</td>
-      <td>0.2575</td>
-      <td>0.6638</td>
-      <td>0.17300</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0.031361</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>84358402</th>
-      <td>M</td>
-      <td>20.29</td>
-      <td>14.34</td>
-      <td>135.10</td>
-      <td>1297.0</td>
-      <td>0.10030</td>
-      <td>0.13280</td>
-      <td>0.1980</td>
-      <td>0.10430</td>
-      <td>0.1809</td>
-      <td>...</td>
-      <td>0.1374</td>
-      <td>0.2050</td>
-      <td>0.4000</td>
-      <td>0.1625</td>
-      <td>0.2364</td>
-      <td>0.07678</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0.999317</td>
-      <td>1</td>
-    </tr>
-  </tbody>
-</table>
-<p>5 rows × 35 columns</p>
-</div>
-
 
 
 
@@ -507,8 +532,10 @@ plt.style.use(['default']);
 ```
 
 
-![png](index_files/index_36_0.png)
+![png](index_files/index_41_0.png)
 
+
+Look at that nice S-shape that fits our data so much more naturally.
 
 __Your Turn__
 
@@ -559,7 +586,7 @@ log_reg.predict_log_proba([[5], [350],[2000]])
 one_random_student(student_first_names)
 ```
 
-    Hunter
+    Reuben
 
 
 How did our logistic regression model compare with our linear regression?
@@ -609,7 +636,7 @@ ax1.set_title('Linear Regression', fontdict={'size': 15} )
 
 # Logistic Regression Confusion Matrix
 cm_log = confusion_matrix(df.Target, df.yhat_log)
-sns.heatmap(cm, annot=True, ax=ax2,  square=True, 
+sns.heatmap(cm_log, annot=True, ax=ax2,  square=True, 
             cbar=False, cmap="coolwarm", fmt='g',
             xticklabels=['B', 'M'],yticklabels=['', ''] )
 
@@ -621,7 +648,7 @@ plt.tight_layout();
 ```
 
 
-![png](index_files/index_47_0.png)
+![png](index_files/index_53_0.png)
 
 
 
@@ -718,7 +745,7 @@ Which errors have particularly negative consequences in the scenario above?
 one_random_student(student_first_names)
 ```
 
-    Jonathan
+    Hunter
 
 
 
@@ -784,7 +811,7 @@ plt.tight_layout();
 ```
 
 
-![png](index_files/index_58_0.png)
+![png](index_files/index_64_0.png)
 
 
 
@@ -806,7 +833,7 @@ To make this conversion, we use the sigmoid function.
 
 As ‘Z’ goes to infinity, Y(predicted) will inch closer to 1, and as ‘Z’ goes to negative infinity, Y(predicted) will inch closer to 0.
 
-Using the sigmoid function above, if X = 1, the estimated probability would be 0.8. This tells that there is 80% chance that this observation would fall in the positive class.
+Using the sigmoid function above, if X = 1, the estimated probability would around .7. This tells that there is 80% chance that this observation would fall in the positive class.
 
 
 
@@ -832,12 +859,12 @@ def sigmoid(x):
 
 ```python
 # Outputs of sigmoid function
-print(sigmoid(0))
+print(sigmoid(1))
 print(sigmoid(10))
 print(sigmoid(-10))
 ```
 
-    0.5
+    0.7310585786300049
     0.9999546021312976
     4.539786870243442e-05
 
@@ -946,6 +973,8 @@ np.log(odds_sample_1)
 
 
 ```python
+# What about sample 43
+
 proba_sample_4 = log_reg.predict_proba(df[['area_mean']])[3,1]
 odds_sample_4 = proba_sample_4/(1-proba_sample_4)
 np.log(odds_sample_4)
@@ -966,7 +995,7 @@ Reproduce the above log_odds prediction using the coef_ and intercept_ attribute
 three_random_students(student_first_names)
 ```
 
-    ['Paul' 'Elena' 'Prabhakar']
+    ['Reuben' 'Jonathan' 'Andrew']
 
 
 
@@ -987,11 +1016,31 @@ log_reg.coef_[0] * df.area_mean.iloc[3] + log_reg.intercept_
 
 
 
+Now, apply the sigmoid function above to convert the log-odds back to a probability.
+
+
+```python
+# Your code here
+```
+
+
+```python
+#__SOLUTION__
+sigmoid(np.log(odds_sample_4))
+```
+
+
+
+
+    0.03136105327730984
+
+
+
 ## 4. Interpreting Logistic Regression Coefficients
 
 Positive coefficients increase the log-odds of the response (and thus increase the probability), and negative coefficients decrease the log-odds of the response (and thus decrease the probability).
 
-<img src='img/logistic_betas.png' width=700/>
+<img src='img/betas.png' width=700/>
 
 
 ```python
@@ -1013,134 +1062,26 @@ log_reg.coef_
 
 Instead of OLS, we will use Maximimum Likelihood Estimation to calculate our $\beta$s. 
 
-The **cost function**, i.e. the distance from the truth of all data points, is is calculated using the probabilities of the Bernouli distribution.
+You could use the cost function we used for linear regression, mean-squared error.  However, with a binary outcome, the MSE is **non-convex**.  Gradient descent risks missing the global minimum in favor of a local minimum.
+
+Instead of optimizing the coefficients based on mean squared error, logistic regression looks to maximize the likelihood of seeing the probabilities given the true class using the following likelihood function.
+
+$$ \Large negative\ loglikelihood = 
+-\frac{1}{n} \sum\limits_{i=1}^N y_i\log{p_i} + (1-y_i)\log(1-p_i) $$
+
+The p variable represents the probabilities of class 1 calculated for each sample, and y represents the true value of the sample.   
+
+Take a moment to think through how the above Likelihood function rewards coefficients which yield high probabilities of a class matched to the true value.
+
+![log_cost](img/cost_curve_log.png)
+
+When looking at the above plots of the cost function, we see that as our hypothesis gets closer predicting the correct value, the slope gets much smaller. The effect is "the cost function penalizes confident and wrong predictions more than it rewards confident and right predictions. The corollary is increasing prediction accuracy (closer to 0 or 1) has diminishing returns on reducing cost due to the logistic nature of our cost function." [source](https://ml-cheatsheet.readthedocs.io/en/latest/logistic_regression.html#id4)
 
 
-
-
-```python
-# The data is distributed as follows:
-
-df.Target.value_counts()
-```
-
-
-
-
-    0    357
-    1    212
-    Name: Target, dtype: int64
-
-
-
-
-```python
-prob_class_1 = df.Target.value_counts()[1]/df.Target.value_counts()[0]
-prob_class_1
-```
-
-
-
-
-    0.5938375350140056
-
-
-
-Instead of optimizing the coefficients based on mean squared error, logistic regression looks to maximize the likelihood of seeing the probabilities given the class.
-
-Likelihood functions model the goodness of fit of our hypothesis.  
-
-In otherwords, they describe how likely a particular set of $\beta$\s are given the true values of our sample.
-
-Because we are dealing with a binary outcome, our likelihood equation comes from the Bernouli distribution:
-
-$$ \Large Likelihood=\prod\limits_{i=0}^N p_i^{y_i}(1-p_i)^{1-y_i}$$
-
-The p variable represents the probabilities of class 1 calculated for each sample, and y represents the true value of the sample.  Take a moment to think through how the above Likelihood function rewards coefficients which yield high probabilities of a class matched to the true value.
-
-
-```python
-# Let's look at the result of the likelihood function if our model were able to predict the correct values with
-# predict with 100% confidence.
-true = df.Target
-pred_p = df.Target
-
-LL = np.prod([(p**t)*(1-p)**(1-t) for t,p in zip(true, pred_p)])
-LL
-```
-
-
-
-
-    1
-
-
-
-Because of issues of [computational complexity](https://math.stackexchange.com/questions/892832/why-we-consider-log-likelihood-instead-of-likelihood-in-gaussian-distribution), we take the log of this cost function. And since we generally want to minimize the derivative to find an optimal solution, we take the negative of log-likelihood as our cost function.
-
-
-$$ \Large negative\ loglikelihood = \sum\limits_{i=1}^N - y_i\log{p_i} - (1-y_i)\log(1-p_i) $$
-
-Our algorithms calculate the derivitave of the cost function to find the $\beta$ values which maximize the likelihood (minimize negative loglikelihood) that they represent the true process which generated the data, given the prior distribution of our target.
 
 Unlike linear regression and its normal equation, there is no closed form solution to minimize the derivative. That is why you may see that non-convergence error.  
 
 See [here](https://web.stanford.edu/~hastie/Papers/ESLII.pdf) for more detail on MLE
-
-
-```python
-# For a single data point, let's look at how this works out:
-
-# True Value of first data point
-df_0_true = df.Target.iloc[0]
-
-# Predicted probability
-df_0_pred_proba = df.yhat_log_proba.iloc[0]
-
-def nlog_loss(y, y_hat_proba):
-     return -y*np.log(y_hat_proba) - (1-y)*np.log(1-y_hat_proba)
-
-nlog_loss(df_0_true, df_0_pred_proba)
-```
-
-
-
-
-    0.022007158711922978
-
-
-
-
-```python
-# cost
-
-targets = df.Target
-pred_proba = df.yhat_log_proba
-
-n_log_like = sum([nlog_loss(y, y_hat_proba) for y, y_hat_proba in zip(targets, pred_proba)])
-n_log_like/len(df)
-```
-
-
-
-
-    0.2861656516177928
-
-
-
-
-```python
-from sklearn.metrics import log_loss
-
-log_loss(targets, pred_proba)
-```
-
-
-
-
-    0.2861656516177924
-
-
 
 
 We have covered how this works for **binary classification problems** (two response classes). But what about **multi-class classification problems** (more than two response classes)?
@@ -1179,339 +1120,256 @@ Scaling is important when implementing regularization, since it penalizes the ma
 
 To correctly implement scaling, we scale only on the training data.
 
+# Pair Annotation
+
+With a partner, put annotations after the empty # comments in the KFold implementation below.
+
 
 ```python
+from sklearn.model_selection import KFold 
 from sklearn.preprocessing import StandardScaler
 
-ss = StandardScaler()
-X_train_scaled = ss.fit_transform(X_train)
-X_train_scaled = pd.DataFrame(X_train_scaled, columns=X_train.columns, index=X_train.index)
+c_recall = {}
 
-# Only transform, do not fit, X_test
-X_test_scaled = ss.transform(X_test)
-X_test_scaled = pd.DataFrame(X_test_scaled, columns=X_test.columns, index=X_test.index)
+#
+kf = KFold(n_splits=4)
 
-```
-
-For the purpose of comparison, Let's now fit without any hyperparamter tuning.
-
-
-```python
-log_reg = LogisticRegression()
-log_reg.fit(X_train_scaled, y_train)
-log_reg.score(X_test_scaled, y_test)
-```
-
-
-
-
-    0.9790209790209791
-
-
-
-That did really well.  But let's check out recall, since false negatives are very important to protect against in medical diagnostic tests.
-
-
-
-```python
-from sklearn.metrics import recall_score
-y_hat = log_reg.predict(X_test_scaled)
-recall_score(y_test, y_hat)
-```
-
-
-
-
-    0.9814814814814815
-
-
-
-
-```python
-list(y_test)
-```
-
-
-
-
-    [0,
-     1,
-     1,
-     0,
-     0,
-     1,
-     1,
-     1,
-     0,
-     0,
-     0,
-     1,
-     0,
-     1,
-     0,
-     1,
-     0,
-     0,
-     0,
-     1,
-     1,
-     0,
-     1,
-     0,
-     0,
-     0,
-     0,
-     0,
-     0,
-     1,
-     0,
-     0,
-     0,
-     0,
-     0,
-     0,
-     1,
-     0,
-     1,
-     0,
-     0,
-     1,
-     0,
-     0,
-     0,
-     0,
-     0,
-     0,
-     0,
-     0,
-     1,
-     1,
-     0,
-     0,
-     0,
-     0,
-     0,
-     1,
-     1,
-     0,
-     0,
-     1,
-     1,
-     0,
-     0,
-     0,
-     1,
-     1,
-     0,
-     0,
-     1,
-     1,
-     0,
-     1,
-     0,
-     0,
-     0,
-     1,
-     0,
-     0,
-     1,
-     0,
-     1,
-     1,
-     1,
-     1,
-     1,
-     1,
-     0,
-     0,
-     0,
-     0,
-     0,
-     0,
-     0,
-     0,
-     1,
-     1,
-     0,
-     1,
-     1,
-     0,
-     1,
-     1,
-     0,
-     0,
-     0,
-     1,
-     0,
-     0,
-     1,
-     0,
-     0,
-     1,
-     0,
-     1,
-     0,
-     0,
-     0,
-     1,
-     0,
-     0,
-     0,
-     1,
-     0,
-     1,
-     1,
-     0,
-     0,
-     1,
-     1,
-     1,
-     0,
-     0,
-     0,
-     1,
-     0,
-     0,
-     0,
-     1,
-     0,
-     1,
-     0]
-
-
-
-
-```python
-cm = confusion_matrix(list(y_test), list(y_hat))
-```
-
-
-```python
-fig, ax = plt.subplots()
-cm = confusion_matrix(y_test, y_hat)
-sns.heatmap(cm, ax=ax, annot=True,  square=True, 
-            cbar=False, cmap="coolwarm", fmt='g',
-            xticklabels=['B', 'M'],yticklabels=['B', 'M'] )
-
-ax.set_xlabel('Predicted', fontdict={'size': 15})
-ax.set_ylabel('True', fontdict={'size': 15})
-
-
-ax.set_title('Scaled Logistic Does Really Well', fontdict={'size': 15} )
-plt.show()
-plt.tight_layout();
-```
-
-
-![png](index_files/index_115_0.png)
-
-
-
-    <Figure size 640x480 with 0 Axes>
-
-
-Even though hyperparameter tuning will have dimishing returns in this scenario, let's see if we can do any better.
-
-Let's cycle through C values, and pick the best value based on accuracy.
-
-
-```python
-c_candidates = np.linspace(1,1000, 500)
-
-c_accuracies = {}
-for c in c_candidates:
+#
+for c in np.linspace(1,1000,100):
     
-    log_reg = LogisticRegression(C=c, solver='lbfgs', max_iter=400)
-    log_reg.fit(X_train_scaled, y_train)
-    c_accuracies[c] = log_reg.score(X_test_scaled, y_test)
+    mean_recall = []
+    
+    #
+    for train_ind, val_ind in kf.split(X_train, y_train):
+        
+        #
+        X_tt, y_tt = X_train.iloc[train_ind], y_train.iloc[train_ind]
+        X_val, y_val = X_train.iloc[val_ind], y_train.iloc[val_ind]
+        
+        ss = StandardScaler()
+        
+        #
+        X_tt = ss.fit_transform(X_tt)
+        X_val = ss.transform(X_val)
+        
+        #
+        log_reg = LogisticRegression(C=c, solver='lbfgs', max_iter=400)
+        
+        log_reg.fit(X_tt, y_tt)
+        
+        mean_recall.append(log_reg.score(X_val, y_val))
+    
+    # 
+    c_recall[c] = np.mean(mean_recall)
+
+
 ```
 
 
 ```python
+#__SOLUTION__
 
-sorted(c_accuracies.items(), key=lambda kv: kv[1], reverse=True)[:10]
+from sklearn.model_selection import KFold 
+from sklearn.preprocessing import StandardScaler
+
+c_recall = {}
+
+# Instantiate a Kfolds instance which we will use to split training into 4 parts
+kf = KFold(n_splits=4)
+
+# Cycle through a series of 100 numbers equally spaced beteen 1 and 1000
+# To be used as the C parameter in the logistic regression models fit below
+for c in np.linspace(1,1000,100):
+    
+    mean_recall = []
+    
+    # Loop through the KFold splits (total of 4 loops), each time reserving a different
+    # quarter of the training data as the validation data
+    for train_ind, val_ind in kf.split(X_train, y_train):
+        
+        X_tt, y_tt = X_train.iloc[train_ind], y_train.iloc[train_ind]
+        X_val, y_val = X_train.iloc[val_ind], y_train.iloc[val_ind]
+        
+        ss = StandardScaler()
+        
+        
+        # Fit the scaler to the training data for each loop.
+        # Then transform the validation set.
+        # This will prevent data leakage.
+        
+        X_tt = ss.fit_transform(X_tt)
+        X_val = ss.transform(X_val)
+        
+        # Fit the logistic regression with the c candidate value
+        # linked to the current step in the loop.
+        log_reg = LogisticRegression(C=c, solver='lbfgs', max_iter=400)
+        
+        log_reg.fit(X_tt, y_tt)
+        
+        mean_recall.append(log_reg.score(X_val, y_val))
+    
+    # Calculate the mean recall score of all validation sets (4 in total)
+    # related to the c value of the previous loop
+    # and add to the dictionary outside of the loop to store the progress.
+    c_recall[c] = np.mean(mean_recall)
+
+```
+
+
+```python
+sorted(c_recall.items(), key=lambda kv: kv[1], reverse=True)[:10]
 ```
 
 
 
 
-    [(1.0, 0.9790209790209791),
-     (3.002004008016032, 0.9790209790209791),
-     (5.004008016032064, 0.972027972027972),
-     (7.006012024048097, 0.972027972027972),
-     (9.008016032064129, 0.972027972027972),
-     (11.01002004008016, 0.972027972027972),
-     (13.012024048096194, 0.972027972027972),
-     (15.014028056112226, 0.972027972027972),
-     (17.016032064128257, 0.972027972027972),
-     (19.01803607214429, 0.972027972027972)]
+    [(1.0, 0.9741447716452125),
+     (51.45454545454546, 0.9718083230470815),
+     (41.36363636363637, 0.9694718744489508),
+     (31.272727272727273, 0.9671133838829131),
+     (61.54545454545455, 0.9671133838829131),
+     (11.090909090909092, 0.9670913419150061),
+     (21.181818181818183, 0.9670913419150061),
+     (71.63636363636364, 0.9647769352847823),
+     (81.72727272727273, 0.9647769352847823),
+     (91.81818181818183, 0.9624404866866514)]
 
 
 
 
 ```python
-# Zero in on lower values:
+from sklearn.model_selection import KFold 
+from sklearn.preprocessing import StandardScaler
 
-c_smaller = np.linspace(.01,3, 100)
-c_smaller_accuracies = {}
-for c in c_smaller:
-    log_reg = LogisticRegression(C=c, solver='lbfgs', max_iter=400)
-    log_reg.fit(X_train_scaled, y_train)
-    c_smaller_accuracies[c] = log_reg.score(X_test_scaled, y_test)
+c_recall = {}
+
+kf = KFold(n_splits=4)
+
+# Iterate with another set of C parameters with a range zeroed in on greater strength
+for c in np.linspace(1,100,100):
+    mean_recall = []
+    for train_ind, val_ind in kf.split(X_train, y_train):
+
+        X_tt, y_tt = X_train.iloc[train_ind], y_train.iloc[train_ind]
+        X_val, y_val = X_train.iloc[val_ind], y_train.iloc[val_ind]
+        
+        ss = StandardScaler()
+        X_tt = ss.fit_transform(X_tt)
+        X_val = ss.transform(X_val)
+        
+        log_reg = LogisticRegression(C=c, solver='lbfgs', max_iter=400)
+        log_reg.fit(X_tt, y_tt)
+        mean_recall.append(log_reg.score(X_val, y_val))
+        
+    c_recall[c] = np.mean(mean_recall)
+
 ```
 
 
 ```python
-sorted(c_smaller_accuracies.items(), key=lambda kv: kv[1], reverse=True)[:10]
-```
-
-
-
-
-    [(0.22141414141414145, 0.993006993006993),
-     (0.2516161616161616, 0.993006993006993),
-     (0.28181818181818186, 0.993006993006993),
-     (0.3120202020202021, 0.993006993006993),
-     (0.34222222222222226, 0.993006993006993),
-     (0.3724242424242425, 0.993006993006993),
-     (0.40262626262626267, 0.993006993006993),
-     (0.040202020202020204, 0.986013986013986),
-     (0.07040404040404041, 0.986013986013986),
-     (0.10060606060606062, 0.986013986013986)]
-
-
-
-
-```python
-best_c = sorted(c_smaller_accuracies.items(), key=lambda kv: kv[1], reverse=True)[0]
-best_c[0]
+sorted(c_recall.items(), key=lambda kv: kv[1], reverse=True)[:10]
 ```
 
 
 
 
-    0.22141414141414145
+    [(2.0, 0.9764812202433433),
+     (1.0, 0.9741447716452125),
+     (3.0, 0.9741227296773056),
+     (4.0, 0.9741227296773056),
+     (43.0, 0.9718083230470815),
+     (44.0, 0.9718083230470815),
+     (45.0, 0.9718083230470815),
+     (46.0, 0.9718083230470815),
+     (47.0, 0.9718083230470815),
+     (48.0, 0.9718083230470815)]
 
 
+
+
+Now that we have selected a C hyperparameter that performs well, fit to the entire training set.
 
 
 ```python
-best_c = sorted(c_smaller_accuracies.items(), key=lambda kv: kv[1], reverse=True)[0]
-log_reg = LogisticRegression(C=best_c[0], solver='lbfgs', max_iter=400)
-log_reg.fit(X_train_scaled, y_train)
-log_reg.score(X_test_scaled, y_test)
+
+ss = StandardScaler()
+
+X_train_sc = ss.fit_transform(X_train)
+log_reg = LogisticRegression(C=2, solver='lbfgs', max_iter=5000)
+log_reg.fit(X_train_sc, y_train)
+
+y_hat = log_reg.predict(X_train_sc)
+```
+
+
+```python
+fig, ax = plt.subplots()
+cm = confusion_matrix(y_train, y_hat)
+sns.heatmap(cm, ax=ax, annot=True,  square=True, 
+            cbar=False, cmap="coolwarm", fmt='g',
+            xticklabels=['B', 'M'],yticklabels=['B', 'M'] )
+
+ax.set_xlabel('Predicted', fontdict={'size': 15})
+ax.set_ylabel('True', fontdict={'size': 15})
 ```
 
 
 
 
-    0.993006993006993
+    Text(87.92222222222226, 0.5, 'True')
 
 
+
+
+![png](index_files/index_118_1.png)
+
+
+We can adjust the threshold to catch more false positives.
 
 
 ```python
-y_hat = log_reg.predict(X_test_scaled)
+
+y_hat = (log_reg.predict_proba(X_train_sc)[:,1] >.4).astype(int)
+
+```
+
+
+```python
+fig, ax = plt.subplots()
+cm = confusion_matrix(y_train, y_hat)
+sns.heatmap(cm, ax=ax, annot=True,  square=True, 
+            cbar=False, cmap="coolwarm", fmt='g',
+            xticklabels=['B', 'M'],yticklabels=['B', 'M'] )
+
+ax.set_xlabel('Predicted', fontdict={'size': 15})
+ax.set_ylabel('True', fontdict={'size': 15})
+```
+
+
+
+
+    Text(87.92222222222226, 0.5, 'True')
+
+
+
+
+![png](index_files/index_121_1.png)
+
+
+# Now apply to the test set
+
+
+```python
+X_test_sc = ss.transform(X_test)
+```
+
+
+```python
+y_hat = (log_reg.predict_proba(X_test_sc)[:,1] >.4).astype(int)
+```
+
+
+```python
 fig, ax = plt.subplots()
 cm = confusion_matrix(y_test, y_hat)
 sns.heatmap(cm, ax=ax, annot=True,  square=True, 
@@ -1519,29 +1377,20 @@ sns.heatmap(cm, ax=ax, annot=True,  square=True,
             xticklabels=['B', 'M'],yticklabels=['B', 'M'] )
 
 ax.set_xlabel('Predicted', fontdict={'size': 15})
-ax.set_ylabel('True', fontdict={'size': 15})
-
-
-ax.set_title('Knocked Out Two FN', fontdict={'size': 15} )
-plt.show()
-plt.tight_layout();
+ax.set_ylabel('True', fontdict={'size': 15});
 ```
 
 
-![png](index_files/index_123_0.png)
+![png](index_files/index_125_0.png)
 
 
-
-    <Figure size 640x480 with 0 Axes>
-
+With our logistic regression coefficients, we can inspect which features our model thinks are most important for the different classifications.
 
 
 ```python
 beta_values = {name:coef for name, coef in zip(list(X_test.columns), list(log_reg.coef_[0]))}
 col = [item[0] for item in sorted(beta_values.items(), key= lambda kv: kv[1], reverse=True)]
 beta = [item[1] for item in sorted(beta_values.items(), key= lambda kv: kv[1], reverse=True)]
-# col_p = [item[0] for item in sorted(beta_values.items(), key= lambda kv: kv[1])][6:]
-# beta_p = [item[1] for item in sorted(beta_values.items(), key= lambda kv: kv[1])][6:]
 
 ```
 
@@ -1565,113 +1414,11 @@ ax.set_title('Relative Importance of Features');
 ```
 
     findfont: Font family ['normal'] not found. Falling back to DejaVu Sans.
+    findfont: Font family ['normal'] not found. Falling back to DejaVu Sans.
 
 
 
-![png](index_files/index_125_1.png)
-
-
-
-```python
-# Let's look at the one value our predictor got wrong
-y_test[y_test != y_hat]
-```
-
-
-
-
-    id
-    859983    1
-    Name: Target, dtype: int64
-
-
-
-
-```python
-X_test_scaled.loc[y_test[y_test != y_hat].index[0]][['texture_worst', 'radius_se', 'symmetry_worst']]
-```
-
-
-
-
-    texture_worst    -0.771919
-    radius_se        -0.431209
-    symmetry_worst   -0.469835
-    Name: 859983, dtype: float64
-
-
-
-
-```python
-X_test_scaled[y_test==1].mean()[['texture_worst', 'radius_se', 'symmetry_worst']]
-```
-
-
-
-
-    texture_worst     0.696082
-    radius_se         0.763464
-    symmetry_worst    0.589979
-    dtype: float64
-
-
-
-
-```python
-X_test_scaled[y_test==1].std()[['texture_worst', 'radius_se', 'symmetry_worst']]
-```
-
-
-
-
-    texture_worst     1.046093
-    radius_se         0.901337
-    symmetry_worst    1.200149
-    dtype: float64
-
-
-
-
-```python
-X_test_scaled.loc[y_test[y_test != y_hat].index[0]][['compactness_se', 'fractal_dimension_se']]
-```
-
-
-
-
-    compactness_se         -0.259049
-    fractal_dimension_se   -0.243363
-    Name: 859983, dtype: float64
-
-
-
-
-```python
-X_test_scaled[y_test==1].mean()[['compactness_se', 'fractal_dimension_se']]
-```
-
-
-
-
-    compactness_se          0.487496
-    fractal_dimension_se    0.211335
-    dtype: float64
-
-
-
-
-```python
-log_reg.predict_proba([X_test_scaled.loc[y_test[y_test != y_hat].index[0]]])
-```
-
-
-
-
-    array([[0.85538625, 0.14461375]])
-
-
-
-Our model was very confident about the negative prediction for our one prediction error.
+![png](index_files/index_128_1.png)
 
 
 # 8. Assumptions of Logistic Regression
@@ -1734,13 +1481,6 @@ for c in np.linspace(.01,1,100):
 # diminishing returns
 sorted(c_recall.items(), key= lambda kf: kf[1], reverse=True)[0]
 ```
-
-
-
-
-    (0.09999999999999999, 0.9765253041791571)
-
-
 
 # Appendix: Converting sigmoid to log-odds.
 
