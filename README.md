@@ -9,19 +9,18 @@
 4. Learn how to interpret a trained logistic model's coefficients
 5. Familiarize ourselves with Maximum Likelihood Estimation
 6. Explore the C (inverse regularization) paramater and hyperparameter tune
-7. Learn how to adjust the threshold of a logistic model
-8. Describe the assumptions of linear regression
+7. Describe the assumptions of logistic regression
 
-# Why logistic 1st of our classifiers?
+# Why logistic regression as the 1st of our classifiers?
 
-Approximately 70% of problems in Data Science are classification problems. There are lots of classification algorithms that are available, but the logistics regression is common and is a useful regression method for solving the binary classification problem.
-
+There are lots of classification algorithms that are available, but the logistics regression is common and is a useful regression method for solving the binary classification problem.
 
 Logistic regression takes a concept we are familiar with, a linear equation, and translates it into a form fit for predicting a class.  
 
 It generally can't compete with the best supervised learning algorithms, but it is **simple, fast, and interpretable**.  
 
 As we will see in mod 4, it will also serve as a segue into our lessons on **neural nets**.
+
 
 # 1. Compare predicting a continuous outcome to predicting a class
 
@@ -30,7 +29,7 @@ Thus far, we have worked to predict continuous target variables using linear reg
   - Continous target variables:
         - Sales price of a home
         - MPG of a car
-        - A Country's Life Expectancy Rate
+        - A country's life expectancy rate
         
 We will now transition into another category of prediction: classification. Instead of continous target variables, we will be predicting whether records from are data are labeled as a particular class.  Whereas the output for the linear regression model can be any number, the output of our classification algorithms can only be a value designated by a set of discrete outcomes.
 
@@ -66,7 +65,7 @@ We are already familiar with how linear regression finds a best-fit "line".  It 
 
 A natural thought would be to use that "line" to descriminate between classes: Everything with an output greater than a certain point is classified as a 1, everything below is classified as a 0.
 
-In this way, logistic classifer is **parametric, discriminitive** function.  The best fit parameters ($\beta$)s creates a decision boundary which allows us to discriminate between the classes.
+Logistic regression does just this, but in a fancy way. The logistic classifer is **parametric, discriminitive** function.  The best fit parameters ($\beta$)s creates a decision boundary which allows us to discriminate between the classes.
 
 ![decision_boundary](https://www.researchgate.net/publication/325813999/figure/fig5/AS:638669773893635@1529282148432/Classification-decision-boundary-using-logistic-regression-The-blue-area-corresponds-to.png)
 
@@ -77,6 +76,14 @@ or die, have heart disease or not, or a condition is present or absent."   [Elem
 
 
 [data_source](https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+(Diagnostic))
+
+![breast_cancer_cells](https://storage.googleapis.com/kaggle-datasets-images/180/384/3da2510581f9d3b902307ff8d06fe327/dataset-card.jpg)
+
+We have 30 predictor columns, and 1 target column.  Our target column, however, is not in a form suitable for classification.  
+
+Assumption: **Binary logistic** regression requires the dependent variable to be binary.
+
+We will define malignant as our positive "1" class, and Benign as our "0" class.
 
 We have a fairly **balanced dataset**.  The logistic regression model will likely be able to pick up on the signal of the minority class.  If it were heavily imbalanced, our model might predict only the majority class, and we would have to use resampling techniques to pick up on the signal.
 
@@ -98,7 +105,7 @@ y_hat = lr.predict(df[['area_mean']])
 
 
 
-- According to the linear regression model, that would be your prediction if area_mean = 350?
+- According to the linear regression model, what would be your prediction if area_mean = 350?
 
 - What about if 'area_mean' is 5?
 
@@ -126,7 +133,13 @@ Let's set the threshhold at .5.
 
 Let's look at how many predictions linear regression got wrong.
 
+The confusion matrix will be an important visualization in classification. It will allow us to see the distribution of prediction results. 
+
+Volunteer from below to interpret the above CM as type I/II error
+
 # Now Let's Try Logistic Regression
+
+Look at that nice S-shape that fits our data so much more naturally.
 
 __Your Turn__
 
@@ -199,7 +212,7 @@ To make this conversion, we use the sigmoid function.
 
 As ‘Z’ goes to infinity, Y(predicted) will inch closer to 1, and as ‘Z’ goes to negative infinity, Y(predicted) will inch closer to 0.
 
-Using the sigmoid function above, if X = 1, the estimated probability would be 0.8. This tells that there is 80% chance that this observation would fall in the positive class.
+Using the sigmoid function above, if X = 1, the estimated probability would around .7. This tells that there is 80% chance that this observation would fall in the positive class.
 
 
 
@@ -266,11 +279,25 @@ log_reg.coef_[0] * df.area_mean.iloc[3] + log_reg.intercept_
 
 
 
+Now, apply the sigmoid function above to convert the log-odds back to a probability.
+
+
+```python
+sigmoid(np.log(odds_sample_4))
+```
+
+
+
+
+    0.03136105327730984
+
+
+
 ## 4. Interpreting Logistic Regression Coefficients
 
 Positive coefficients increase the log-odds of the response (and thus increase the probability), and negative coefficients decrease the log-odds of the response (and thus decrease the probability).
 
-<img src='img/logistic_betas.png' width=700/>
+<img src='img/betas.png' width=700/>
 
 **Interpretation:** A 1 unit increase in 'area size' is associated with a .0118 unit increase in the log-odds of a malignant result.
 
@@ -280,28 +307,22 @@ Positive coefficients increase the log-odds of the response (and thus increase t
 
 Instead of OLS, we will use Maximimum Likelihood Estimation to calculate our $\beta$s. 
 
-The **cost function**, i.e. the distance from the truth of all data points, is is calculated using the probabilities of the Bernouli distribution.
+You could use the cost function we used for linear regression, mean-squared error.  However, with a binary outcome, the MSE is **non-convex**.  Gradient descent risks missing the global minimum in favor of a local minimum.
+
+Instead of optimizing the coefficients based on mean squared error, logistic regression looks to maximize the likelihood of seeing the probabilities given the true class using the following likelihood function.
+
+$$ \Large negative\ loglikelihood = 
+-\frac{1}{n} \sum\limits_{i=1}^N y_i\log{p_i} + (1-y_i)\log(1-p_i) $$
+
+The p variable represents the probabilities of class 1 calculated for each sample, and y represents the true value of the sample.   
+
+Take a moment to think through how the above Likelihood function rewards coefficients which yield high probabilities of a class matched to the true value.
+
+![log_cost](img/cost_curve_log.png)
+
+When looking at the above plots of the cost function, we see that as our hypothesis gets closer predicting the correct value, the slope gets much smaller. The effect is "the cost function penalizes confident and wrong predictions more than it rewards confident and right predictions. The corollary is increasing prediction accuracy (closer to 0 or 1) has diminishing returns on reducing cost due to the logistic nature of our cost function." [source](https://ml-cheatsheet.readthedocs.io/en/latest/logistic_regression.html#id4)
 
 
-
-Instead of optimizing the coefficients based on mean squared error, logistic regression looks to maximize the likelihood of seeing the probabilities given the class.
-
-Likelihood functions model the goodness of fit of our hypothesis.  
-
-In otherwords, they describe how likely a particular set of $\beta$\s are given the true values of our sample.
-
-Because we are dealing with a binary outcome, our likelihood equation comes from the Bernouli distribution:
-
-$$ \Large Likelihood=\prod\limits_{i=0}^N p_i^{y_i}(1-p_i)^{1-y_i}$$
-
-The p variable represents the probabilities of class 1 calculated for each sample, and y represents the true value of the sample.  Take a moment to think through how the above Likelihood function rewards coefficients which yield high probabilities of a class matched to the true value.
-
-Because of issues of [computational complexity](https://math.stackexchange.com/questions/892832/why-we-consider-log-likelihood-instead-of-likelihood-in-gaussian-distribution), we take the log of this cost function. And since we generally want to minimize the derivative to find an optimal solution, we take the negative of log-likelihood as our cost function.
-
-
-$$ \Large negative\ loglikelihood = \sum\limits_{i=1}^N - y_i\log{p_i} - (1-y_i)\log(1-p_i) $$
-
-Our algorithms calculate the derivitave of the cost function to find the $\beta$ values which maximize the likelihood (minimize negative loglikelihood) that they represent the true process which generated the data, given the prior distribution of our target.
 
 Unlike linear regression and its normal equation, there is no closed form solution to minimize the derivative. That is why you may see that non-convergence error.  
 
@@ -325,17 +346,67 @@ Scaling is important when implementing regularization, since it penalizes the ma
 
 To correctly implement scaling, we scale only on the training data.
 
-For the purpose of comparison, Let's now fit without any hyperparamter tuning.
+# Pair Annotation
 
-That did really well.  But let's check out recall, since false negatives are very important to protect against in medical diagnostic tests.
+With a partner, put annotations after the empty # comments in the KFold implementation below.
 
 
-Even though hyperparameter tuning will have dimishing returns in this scenario, let's see if we can do any better.
+```python
 
-Let's cycle through C values, and pick the best value based on accuracy.
+from sklearn.model_selection import KFold 
+from sklearn.preprocessing import StandardScaler
 
-Our model was very confident about the negative prediction for our one prediction error.
+c_recall = {}
 
+# Instantiate a Kfolds instance which we will use to split training into 4 parts
+kf = KFold(n_splits=4)
+
+# Cycle through a series of 100 numbers equally spaced beteen 1 and 1000
+# To be used as the C parameter in the logistic regression models fit below
+for c in np.linspace(1,1000,100):
+    
+    mean_recall = []
+    
+    # Loop through the KFold splits (total of 4 loops), each time reserving a different
+    # quarter of the training data as the validation data
+    for train_ind, val_ind in kf.split(X_train, y_train):
+        
+        X_tt, y_tt = X_train.iloc[train_ind], y_train.iloc[train_ind]
+        X_val, y_val = X_train.iloc[val_ind], y_train.iloc[val_ind]
+        
+        ss = StandardScaler()
+        
+        
+        # Fit the scaler to the training data for each loop.
+        # Then transform the validation set.
+        # This will prevent data leakage.
+        
+        X_tt = ss.fit_transform(X_tt)
+        X_val = ss.transform(X_val)
+        
+        # Fit the logistic regression with the c candidate value
+        # linked to the current step in the loop.
+        log_reg = LogisticRegression(C=c, solver='lbfgs', max_iter=400)
+        
+        log_reg.fit(X_tt, y_tt)
+        
+        mean_recall.append(log_reg.score(X_val, y_val))
+    
+    # Calculate the mean recall score of all validation sets (4 in total)
+    # related to the c value of the previous loop
+    # and add to the dictionary outside of the loop to store the progress.
+    c_recall[c] = np.mean(mean_recall)
+
+```
+
+
+Now that we have selected a C hyperparameter that performs well, fit to the entire training set.
+
+We can adjust the threshold to catch more false positives.
+
+# Now apply to the test set
+
+With our logistic regression coefficients, we can inspect which features our model thinks are most important for the different classifications.
 
 # 8. Assumptions of Logistic Regression
 
