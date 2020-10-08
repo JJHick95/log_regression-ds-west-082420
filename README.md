@@ -13,13 +13,13 @@
 
 # Why logistic regression as the 1st of our classifiers?
 
-There are lots of classification algorithms that are available, but the logistics regression is common and is a useful regression method for solving the binary classification problem.
+- It is widely used.
 
-Logistic regression takes a concept we are familiar with, a linear equation, and translates it into a form fit for predicting a class.  
+- Logistic regression takes a concept we are familiar with, a linear equation, and translates it into a form fit for predicting a class.  
 
-It generally can't compete with the best supervised learning algorithms, but it is **simple, fast, and interpretable**.  
+- It generally can't compete with the best supervised learning algorithms, but it is **simple, fast, and interpretable**.  
 
-As we will see in mod 4, it will also serve as a segue into our lessons on **neural nets**.
+- As we will see in mod 4, it will also serve as a segue into our lessons on **neural nets**.
 
 
 # 1. Compare predicting a continuous outcome to predicting a class
@@ -65,7 +65,9 @@ We are already familiar with how linear regression finds a best-fit "line".  It 
 
 A natural thought would be to use that "line" to descriminate between classes: Everything with an output greater than a certain point is classified as a 1, everything below is classified as a 0.
 
-Logistic regression does just this, but in a fancy way. The logistic classifer is **parametric, discriminitive** function.  The best fit parameters ($\beta$)s creates a decision boundary which allows us to discriminate between the classes.
+Logistic regression does just this, but with some fancy tricks. 
+
+The logistic classifer is **parametric, discriminitive** function.  The best fit parameters ($\beta$)s creates a decision boundary which allows us to discriminate between the classes.
 
 ![decision_boundary](https://www.researchgate.net/publication/325813999/figure/fig5/AS:638669773893635@1529282148432/Classification-decision-boundary-using-logistic-regression-The-blue-area-corresponds-to.png)
 
@@ -116,15 +118,6 @@ y_hat = lr.predict(df[['area_mean']])
 lr.predict(np.array([[5],[350], [2000]]))
 ```
 
-
-
-
-    array([[-0.26100989],
-           [ 0.07533936],
-           [ 1.68396621]])
-
-
-
 Those predictions are not within the bounds of our target's sample space. In fact, linear regression could produce predictions from **-$\infty$ to $\infty$**  
 
 
@@ -133,7 +126,7 @@ Let's set the threshhold at .5.
 
 Let's look at how many predictions linear regression got wrong.
 
-The confusion matrix will be an important visualization in classification. It will allow us to see the distribution of prediction results. 
+The **confusion matrix** will be an important visualization in classification. It will allow us to see the distribution of prediction results. 
 
 Volunteer from below to interpret the above CM as type I/II error
 
@@ -154,13 +147,6 @@ Use the trained logistic regression and make predictions for
 log_reg.predict([[5], [350],[2000]])
 ```
 
-
-
-
-    array([0, 0, 1])
-
-
-
 Logistic regression's predict function automatically converts the predicted probabilities to categorical predctions.
 To return the probabilities, use the predict_proba method.
 
@@ -179,13 +165,6 @@ Which errors have particularly negative consequences in the scenario above?
 '''type II errors, false negatives, are particularly dangerous.  
 A false negative means a sample was predicted to be benign, when in fact it was malignant'''
 ```
-
-
-
-
-    'type II errors, false negatives, are particularly dangerous.  \nA false negative means a sample was predicted to be benign, when in fact it was malignant'
-
-
 
 To err on the side of caution, we can force our model to predict more conservitavely.  
 
@@ -212,7 +191,7 @@ To make this conversion, we use the sigmoid function.
 
 As ‘Z’ goes to infinity, Y(predicted) will inch closer to 1, and as ‘Z’ goes to negative infinity, Y(predicted) will inch closer to 0.
 
-Using the sigmoid function above, if X = 1, the estimated probability would around .7. This tells that there is 80% chance that this observation would fall in the positive class.
+Using the sigmoid function above, if X = 1, the estimated probability would around .7. This tells that there is 70% chance that this observation would fall in the positive class.
 
 
 
@@ -272,26 +251,12 @@ Reproduce the above log_odds prediction using the coef_ and intercept_ attribute
 log_reg.coef_[0] * df.area_mean.iloc[3] + log_reg.intercept_
 ```
 
-
-
-
-    array([-3.43032516])
-
-
-
 Now, apply the sigmoid function above to convert the log-odds back to a probability.
 
 
 ```python
 sigmoid(np.log(odds_sample_4))
 ```
-
-
-
-
-    0.03136105327730984
-
-
 
 ## 4. Interpreting Logistic Regression Coefficients
 
@@ -316,7 +281,7 @@ $$ \Large negative\ loglikelihood =
 
 The p variable represents the probabilities of class 1 calculated for each sample, and y represents the true value of the sample.   
 
-Take a moment to think through how the above Likelihood function rewards coefficients which yield high probabilities of a class matched to the true value.
+Take a moment to think through how the above negative loglikelihood function rewards coefficients which yield high probabilities of a class matched to the true value.
 
 ![log_cost](img/cost_curve_log.png)
 
@@ -425,8 +390,6 @@ First, logistic regression does not require a linear relationship between the de
 4. Logistic regression assumes linearity of independent variables and log odds.  although this analysis does not require the dependent and independent variables to be related linearly, it requires that the independent variables are linearly related to the log odds.
 
 5. Logistic regression typically requires a large sample size.  A general guideline is that you need at minimum of 10 cases with the least frequent outcome for each independent variable in your model. For example, if you have 5 independent variables and the expected probability of your least frequent outcome is .10, then you would need a minimum sample size of 500 (10*5 / .10).
-
-# Appendix: Kfolds
 
 # Appendix: Converting sigmoid to log-odds.
 
