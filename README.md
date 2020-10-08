@@ -19,13 +19,13 @@ from src.student_list import student_first_names
 
 # Why logistic regression as the 1st of our classifiers?
 
-There are lots of classification algorithms that are available, but the logistics regression is common and is a useful regression method for solving the binary classification problem.
+- It is widely used.
 
-Logistic regression takes a concept we are familiar with, a linear equation, and translates it into a form fit for predicting a class.  
+- Logistic regression takes a concept we are familiar with, a linear equation, and translates it into a form fit for predicting a class.  
 
-It generally can't compete with the best supervised learning algorithms, but it is **simple, fast, and interpretable**.  
+- It generally can't compete with the best supervised learning algorithms, but it is **simple, fast, and interpretable**.  
 
-As we will see in mod 4, it will also serve as a segue into our lessons on **neural nets**.
+- As we will see in mod 4, it will also serve as a segue into our lessons on **neural nets**.
 
 
 # 1. Compare predicting a continuous outcome to predicting a class
@@ -56,9 +56,6 @@ Let's navigate to the [UCI Machine Learning repository](https://archive.ics.uci.
 three_random_students(student_first_names)
 ```
 
-    ['Reuben' 'Ali' 'Josh']
-
-
 ### We are still dealing with **labeled data**.
 
 ![labels](https://media.giphy.com/media/26Ff5evMweBsENWqk/giphy.gif)
@@ -79,7 +76,9 @@ We are already familiar with how linear regression finds a best-fit "line".  It 
 
 A natural thought would be to use that "line" to descriminate between classes: Everything with an output greater than a certain point is classified as a 1, everything below is classified as a 0.
 
-Logistic regression does just this, but in a fancy way. The logistic classifer is **parametric, discriminitive** function.  The best fit parameters ($\beta$)s creates a decision boundary which allows us to discriminate between the classes.
+Logistic regression does just this, but with some fancy tricks. 
+
+The logistic classifer is **parametric, discriminitive** function.  The best fit parameters ($\beta$)s creates a decision boundary which allows us to discriminate between the classes.
 
 ![decision_boundary](https://www.researchgate.net/publication/325813999/figure/fig5/AS:638669773893635@1529282148432/Classification-decision-boundary-using-logistic-regression-The-blue-area-corresponds-to.png)
 
@@ -109,202 +108,6 @@ df.drop(columns= ['Unnamed: 32'], inplace = True)
 df.head()
 ```
 
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>diagnosis</th>
-      <th>radius_mean</th>
-      <th>texture_mean</th>
-      <th>perimeter_mean</th>
-      <th>area_mean</th>
-      <th>smoothness_mean</th>
-      <th>compactness_mean</th>
-      <th>concavity_mean</th>
-      <th>concave points_mean</th>
-      <th>symmetry_mean</th>
-      <th>...</th>
-      <th>radius_worst</th>
-      <th>texture_worst</th>
-      <th>perimeter_worst</th>
-      <th>area_worst</th>
-      <th>smoothness_worst</th>
-      <th>compactness_worst</th>
-      <th>concavity_worst</th>
-      <th>concave points_worst</th>
-      <th>symmetry_worst</th>
-      <th>fractal_dimension_worst</th>
-    </tr>
-    <tr>
-      <th>id</th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>842302</th>
-      <td>M</td>
-      <td>17.99</td>
-      <td>10.38</td>
-      <td>122.80</td>
-      <td>1001.0</td>
-      <td>0.11840</td>
-      <td>0.27760</td>
-      <td>0.3001</td>
-      <td>0.14710</td>
-      <td>0.2419</td>
-      <td>...</td>
-      <td>25.38</td>
-      <td>17.33</td>
-      <td>184.60</td>
-      <td>2019.0</td>
-      <td>0.1622</td>
-      <td>0.6656</td>
-      <td>0.7119</td>
-      <td>0.2654</td>
-      <td>0.4601</td>
-      <td>0.11890</td>
-    </tr>
-    <tr>
-      <th>842517</th>
-      <td>M</td>
-      <td>20.57</td>
-      <td>17.77</td>
-      <td>132.90</td>
-      <td>1326.0</td>
-      <td>0.08474</td>
-      <td>0.07864</td>
-      <td>0.0869</td>
-      <td>0.07017</td>
-      <td>0.1812</td>
-      <td>...</td>
-      <td>24.99</td>
-      <td>23.41</td>
-      <td>158.80</td>
-      <td>1956.0</td>
-      <td>0.1238</td>
-      <td>0.1866</td>
-      <td>0.2416</td>
-      <td>0.1860</td>
-      <td>0.2750</td>
-      <td>0.08902</td>
-    </tr>
-    <tr>
-      <th>84300903</th>
-      <td>M</td>
-      <td>19.69</td>
-      <td>21.25</td>
-      <td>130.00</td>
-      <td>1203.0</td>
-      <td>0.10960</td>
-      <td>0.15990</td>
-      <td>0.1974</td>
-      <td>0.12790</td>
-      <td>0.2069</td>
-      <td>...</td>
-      <td>23.57</td>
-      <td>25.53</td>
-      <td>152.50</td>
-      <td>1709.0</td>
-      <td>0.1444</td>
-      <td>0.4245</td>
-      <td>0.4504</td>
-      <td>0.2430</td>
-      <td>0.3613</td>
-      <td>0.08758</td>
-    </tr>
-    <tr>
-      <th>84348301</th>
-      <td>M</td>
-      <td>11.42</td>
-      <td>20.38</td>
-      <td>77.58</td>
-      <td>386.1</td>
-      <td>0.14250</td>
-      <td>0.28390</td>
-      <td>0.2414</td>
-      <td>0.10520</td>
-      <td>0.2597</td>
-      <td>...</td>
-      <td>14.91</td>
-      <td>26.50</td>
-      <td>98.87</td>
-      <td>567.7</td>
-      <td>0.2098</td>
-      <td>0.8663</td>
-      <td>0.6869</td>
-      <td>0.2575</td>
-      <td>0.6638</td>
-      <td>0.17300</td>
-    </tr>
-    <tr>
-      <th>84358402</th>
-      <td>M</td>
-      <td>20.29</td>
-      <td>14.34</td>
-      <td>135.10</td>
-      <td>1297.0</td>
-      <td>0.10030</td>
-      <td>0.13280</td>
-      <td>0.1980</td>
-      <td>0.10430</td>
-      <td>0.1809</td>
-      <td>...</td>
-      <td>22.54</td>
-      <td>16.67</td>
-      <td>152.20</td>
-      <td>1575.0</td>
-      <td>0.1374</td>
-      <td>0.2050</td>
-      <td>0.4000</td>
-      <td>0.1625</td>
-      <td>0.2364</td>
-      <td>0.07678</td>
-    </tr>
-  </tbody>
-</table>
-<p>5 rows × 31 columns</p>
-</div>
-
-
-
 We have 30 predictor columns, and 1 target column.  Our target column, however, is not in a form suitable for classification.  
 
 Assumption: **Binary logistic** regression requires the dependent variable to be binary.
@@ -320,15 +123,6 @@ df['Target'] = df.diagnosis.map(lambda x: 1 if x == 'M' else 0)
 ```python
 df.Target.value_counts()
 ```
-
-
-
-
-    0    357
-    1    212
-    Name: Target, dtype: int64
-
-
 
 We have a fairly **balanced dataset**.  The logistic regression model will likely be able to pick up on the signal of the minority class.  If it were heavily imbalanced, our model might predict only the majority class, and we would have to use resampling techniques to pick up on the signal.
 
@@ -356,17 +150,6 @@ fig, ax = plt.subplots(figsize=(7,7))
 sns.scatterplot(df.area_mean, df.Target, hue=df.Target)
 sns.scatterplot(df.area_mean, list(y_hat),color='black')
 ```
-
-
-
-
-    <matplotlib.axes._subplots.AxesSubplot at 0x1a1d42d5c0>
-
-
-
-
-![png](index_files/index_24_1.png)
-
 
 
 
@@ -405,10 +188,6 @@ ax.hlines(.5, xmin=0, xmax=2500)
 ax.get_legend().remove();
 ```
 
-
-![png](index_files/index_29_0.png)
-
-
 Let's look at how many predictions linear regression got wrong.
 
 
@@ -416,10 +195,7 @@ Let's look at how many predictions linear regression got wrong.
 print(f"Linear Regression missed {(df.Target != df.lr_yhat).sum()} predictions")
 ```
 
-    Linear Regression missed 82 predictions
-
-
-The confusion matrix will be an important visualization in classification. It will allow us to see the distribution of prediction results. 
+The **confusion matrix** will be an important visualization in classification. It will allow us to see the distribution of prediction results. 
 
 
 ```python
@@ -430,14 +206,6 @@ import matplotlib.pyplot as plt
 cm_lin = confusion_matrix(df.Target, df.lr_yhat)
 cm_lin
 ```
-
-
-
-
-    array([[351,   6],
-           [ 76, 136]])
-
-
 
 
 ```python
@@ -451,19 +219,12 @@ ax.set_title('Linear Regression\n Tumor Diagnostic Predictions', fontdict={'size
 plt.show()
 ```
 
-
-![png](index_files/index_34_0.png)
-
-
 Volunteer from below to interpret the above CM as type I/II error
 
 
 ```python
 three_random_students(student_first_names)
 ```
-
-    ['Matthew' 'Ali' 'Josh']
-
 
 # Now Let's Try Logistic Regression
 
@@ -490,10 +251,6 @@ df['yhat_log'] = yhat_log
 
 ```
 
-    /Users/johnmaxbarry/anaconda3/lib/python3.7/site-packages/sklearn/utils/validation.py:760: DataConversionWarning: A column-vector y was passed when a 1d array was expected. Please change the shape of y to (n_samples, ), for example using ravel().
-      y = column_or_1d(y, warn=True)
-
-
 
 ```python
 import matplotlib.pyplot as plt
@@ -505,10 +262,6 @@ ax.get_legend().remove()
 ax.set_title('Logistic Regression Predictions')
 plt.style.use(['default']);
 ```
-
-
-![png](index_files/index_39_0.png)
-
 
 Look at that nice S-shape that fits our data so much more naturally.
 
@@ -534,22 +287,10 @@ log_reg.predict_log_proba([[5], [350],[2000]])
 ```
 
 
-
-
-    array([[-3.65219872e-04, -7.91519360e+00],
-           [-2.09500013e-02, -3.87607329e+00],
-           [-1.55608578e+01, -1.74584373e-07]])
-
-
-
-
 ```python
 # What does the above output mean?
 one_random_student(student_first_names)
 ```
-
-    Reuben
-
 
 How did our logistic regression model compare with our linear regression?
 
@@ -558,9 +299,6 @@ How did our logistic regression model compare with our linear regression?
 print(f"Logistic Regression missed {(df.Target != df.yhat_log).sum()} predictions")
 ```
 
-    Logistic Regression missed 66 predictions
-
-
 
 ```python
 # Let's look at how many differences there were between our two predictions
@@ -568,20 +306,10 @@ print(f"Logistic Regression missed {(df.Target != df.yhat_log).sum()} prediction
 ```
 
 
-
-
-    44
-
-
-
-
 ```python
 lr_logr_diffs = df[(df.lr_yhat != df.yhat_log) & (df.lr_yhat == df.Target)]
 print(lr_logr_diffs.shape[0])
 ```
-
-    14
-
 
 
 ```python
@@ -609,14 +337,6 @@ plt.show()
 plt.tight_layout();
 ```
 
-
-![png](index_files/index_50_0.png)
-
-
-
-    <Figure size 640x480 with 0 Axes>
-
-
 # Threshold
 
 By default, the predict() method applies a threshold of .05 to our prediction probabilities.
@@ -628,76 +348,6 @@ By default, the predict() method applies a threshold of .05 to our prediction pr
 (log_reg.predict_proba(df[['area_mean']])[:,1] > .5).astype(int) == log_reg.predict(df[['area_mean']])
 ```
 
-
-
-
-    array([ True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True,  True,  True,  True,  True,  True,  True,  True,
-            True,  True])
-
-
-
 However, we may want to be more conservative in our estimate. With medical diagnostics in particular, certain errors are more important to catch.
 
 Which errors have particularly negative consequences in the scenario above?
@@ -706,9 +356,6 @@ Which errors have particularly negative consequences in the scenario above?
 ```python
 one_random_student(student_first_names)
 ```
-
-    Hunter
-
 
 To err on the side of caution, we can force our model to predict more conservitavely.  
 
@@ -751,14 +398,6 @@ plt.show()
 plt.tight_layout();
 ```
 
-
-![png](index_files/index_59_0.png)
-
-
-
-    <Figure size 640x480 with 0 Axes>
-
-
 # 3. Logistic Regression Under the Hood
 
 As we have seen above, linear regression outputs a value that can range anywhere from $-\infty$ to $\infty$.  
@@ -774,7 +413,7 @@ To make this conversion, we use the sigmoid function.
 
 As ‘Z’ goes to infinity, Y(predicted) will inch closer to 1, and as ‘Z’ goes to negative infinity, Y(predicted) will inch closer to 0.
 
-Using the sigmoid function above, if X = 1, the estimated probability would around .7. This tells that there is 80% chance that this observation would fall in the positive class.
+Using the sigmoid function above, if X = 1, the estimated probability would around .7. This tells that there is 70% chance that this observation would fall in the positive class.
 
 
 
@@ -790,11 +429,6 @@ print(sigmoid(1))
 print(sigmoid(10))
 print(sigmoid(-10))
 ```
-
-    0.7310585786300049
-    0.9999546021312976
-    4.539786870243442e-05
-
 
 If we substitute the product of our linear equation for x in the function above, and rephrase the objective of logistic regression as computing the probability of a class (assume positive class 1) given a set of $\beta$ parameters, our formula becomes:
 
@@ -837,24 +471,10 @@ np.log(2)
 ```
 
 
-
-
-    0.6931471805599453
-
-
-
-
 ```python
 # Dice roll >=  5: probability = 2/6, odds = 2/4 = .5
 np.log(.5)
 ```
-
-
-
-
-    -0.6931471805599453
-
-
 
 Let's check our understanding with the probability predictions of our logistic regression predict_proba output
 
@@ -865,24 +485,10 @@ proba_sample_1
 ```
 
 
-
-
-    0.9782332321362418
-
-
-
-
 ```python
 odds_sample_1 = proba_sample_1/(1-proba_sample_1)
 odds_sample_1
 ```
-
-
-
-
-    44.941593453799186
-
-
 
 
 ```python
@@ -890,13 +496,6 @@ odds_sample_1
 np.log(odds_sample_1)
 
 ```
-
-
-
-
-    3.8053637234894935
-
-
 
 
 ```python
@@ -907,13 +506,6 @@ odds_sample_4 = proba_sample_4/(1-proba_sample_4)
 np.log(odds_sample_4)
 ```
 
-
-
-
-    -3.4303251568881965
-
-
-
 # Help me out
 Reproduce the above log_odds prediction using the coef_ and intercept_ attributes of our fitted log_reg model.
 
@@ -921,9 +513,6 @@ Reproduce the above log_odds prediction using the coef_ and intercept_ attribute
 ```python
 three_random_students(student_first_names)
 ```
-
-    ['Reuben' 'Jonathan' 'Andrew']
-
 
 
 ```python
@@ -948,13 +537,6 @@ Positive coefficients increase the log-odds of the response (and thus increase t
 log_reg.coef_
 ```
 
-
-
-
-    array([[0.01176726]])
-
-
-
 **Interpretation:** A 1 unit increase in 'area size' is associated with a .0118 unit increase in the log-odds of a malignant result.
 
 **Bottom line:** Positive coefficients increase the log-odds of the response (and thus increase the probability), and negative coefficients decrease the log-odds of the response (and thus decrease the probability).
@@ -972,7 +554,7 @@ $$ \Large negative\ loglikelihood =
 
 The p variable represents the probabilities of class 1 calculated for each sample, and y represents the true value of the sample.   
 
-Take a moment to think through how the above Likelihood function rewards coefficients which yield high probabilities of a class matched to the true value.
+Take a moment to think through how the above negative loglikelihood function rewards coefficients which yield high probabilities of a class matched to the true value.
 
 ![log_cost](img/cost_curve_log.png)
 
@@ -1072,22 +654,6 @@ sorted(c_recall.items(), key=lambda kv: kv[1], reverse=True)[:10]
 ```
 
 
-
-
-    [(1.0, 0.9741447716452125),
-     (51.45454545454546, 0.9718083230470815),
-     (41.36363636363637, 0.9694718744489508),
-     (31.272727272727273, 0.9671133838829131),
-     (61.54545454545455, 0.9671133838829131),
-     (11.090909090909092, 0.9670913419150061),
-     (21.181818181818183, 0.9670913419150061),
-     (71.63636363636364, 0.9647769352847823),
-     (81.72727272727273, 0.9647769352847823),
-     (91.81818181818183, 0.9624404866866514)]
-
-
-
-
 ```python
 from sklearn.model_selection import KFold 
 from sklearn.preprocessing import StandardScaler
@@ -1122,22 +688,6 @@ sorted(c_recall.items(), key=lambda kv: kv[1], reverse=True)[:10]
 ```
 
 
-
-
-    [(2.0, 0.9764812202433433),
-     (1.0, 0.9741447716452125),
-     (3.0, 0.9741227296773056),
-     (4.0, 0.9741227296773056),
-     (43.0, 0.9718083230470815),
-     (44.0, 0.9718083230470815),
-     (45.0, 0.9718083230470815),
-     (46.0, 0.9718083230470815),
-     (47.0, 0.9718083230470815),
-     (48.0, 0.9718083230470815)]
-
-
-
-
 Now that we have selected a C hyperparameter that performs well, fit to the entire training set.
 
 
@@ -1162,18 +712,8 @@ sns.heatmap(cm, ax=ax, annot=True,  square=True,
 
 ax.set_xlabel('Predicted', fontdict={'size': 15})
 ax.set_ylabel('True', fontdict={'size': 15})
+ax.set_title('Logistic Regression: C2', fontdict={'size': 15})
 ```
-
-
-
-
-    Text(87.92222222222226, 0.5, 'True')
-
-
-
-
-![png](index_files/index_109_1.png)
-
 
 We can adjust the threshold to catch more false positives.
 
@@ -1194,18 +734,8 @@ sns.heatmap(cm, ax=ax, annot=True,  square=True,
 
 ax.set_xlabel('Predicted', fontdict={'size': 15})
 ax.set_ylabel('True', fontdict={'size': 15})
+ax.set_title('Logistic Regression: Threshold .4', fontdict={'size': 15})
 ```
-
-
-
-
-    Text(87.92222222222226, 0.5, 'True')
-
-
-
-
-![png](index_files/index_112_1.png)
-
 
 # Now apply to the test set
 
@@ -1229,11 +759,8 @@ sns.heatmap(cm, ax=ax, annot=True,  square=True,
 
 ax.set_xlabel('Predicted', fontdict={'size': 15})
 ax.set_ylabel('True', fontdict={'size': 15});
+ax.set_title('Holdout Test Results', fontdict={'size': 15})
 ```
-
-
-![png](index_files/index_116_0.png)
-
 
 With our logistic regression coefficients, we can inspect which features our model thinks are most important for the different classifications.
 
@@ -1264,14 +791,6 @@ for bar in range(1,8):
 ax.set_title('Relative Importance of Features');
 ```
 
-    findfont: Font family ['normal'] not found. Falling back to DejaVu Sans.
-    findfont: Font family ['normal'] not found. Falling back to DejaVu Sans.
-
-
-
-![png](index_files/index_119_1.png)
-
-
 # 8. Assumptions of Logistic Regression
 
 Logistic regression does not make many of the key assumptions of linear regression and general linear models that are based on ordinary least squares algorithms – particularly regarding linearity, normality, and homoscedasticity.
@@ -1289,49 +808,6 @@ First, logistic regression does not require a linear relationship between the de
 4. Logistic regression assumes linearity of independent variables and log odds.  although this analysis does not require the dependent and independent variables to be related linearly, it requires that the independent variables are linearly related to the log odds.
 
 5. Logistic regression typically requires a large sample size.  A general guideline is that you need at minimum of 10 cases with the least frequent outcome for each independent variable in your model. For example, if you have 5 independent variables and the expected probability of your least frequent outcome is .10, then you would need a minimum sample size of 500 (10*5 / .10).
-
-# Appendix: Kfolds
-
-
-```python
-from sklearn.model_selection import train_test_split
-
-X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=.25, random_state=42)
-```
-
-
-```python
-from sklearn.model_selection import KFold 
-
-
-c_recall = {}
-
-kf = KFold(n_splits=4)
-
-for c in np.linspace(.01,1,100):
-    mean_recall = []
-    for train_ind, val_ind in kf.split(X_train, y_train):
-
-        X_tt, y_tt = X_train.iloc[train_ind], y_train.iloc[train_ind]
-        X_val, y_val = X_train.iloc[val_ind], y_train.iloc[val_ind]
-        ss = StandardScaler()
-        X_tt = ss.fit_transform(X_tt)
-        X_val = ss.transform(X_val)
-        log_reg = LogisticRegression(C=c, solver='lbfgs', max_iter=400)
-        log_reg.fit(X_tt, y_tt)
-        mean_recall.append(log_reg.score(X_val, y_val))
-        
-    c_recall[c] = np.mean(mean_recall)
-
-
-
-```
-
-
-```python
-# diminishing returns
-sorted(c_recall.items(), key= lambda kf: kf[1], reverse=True)[0]
-```
 
 # Appendix: Converting sigmoid to log-odds.
 
